@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 class ProductTest extends TestCase
 {
-    public function testItCreatesAnProduct()
+    public function testItCreatesAProduct()
     {
         $params = Product::factory()->make();
 
@@ -19,7 +19,7 @@ class ProductTest extends TestCase
         $this->assertEquals($product->name, $params->toArray()['name']);
     }
 
-    public function testItListsAnProduct()
+    public function testItListsAProduct()
     {
         $productsParams = Product::factory()->count(5)->make();
 
@@ -34,7 +34,7 @@ class ProductTest extends TestCase
         $this->assertNotEmpty($response['data']);
     }
 
-    public function testItShowAnProduct()
+    public function testItShowAProduct()
     {
         $params = Product::factory()->make();
 
@@ -45,7 +45,7 @@ class ProductTest extends TestCase
         $this->assertEquals($product['name'], $show['name']);
     }
 
-    public function testItUpdateAnProduct()
+    public function testItUpdateAProduct()
     {
         $params = Product::factory()->make();
 
@@ -58,7 +58,7 @@ class ProductTest extends TestCase
         $this->assertEquals($newParams->toArray()['name'], $productUpdated->name);
     }
 
-    public function testItDeleteAnProduct()
+    public function testItDeleteAProduct()
     {
         $params = Product::factory()->make();
 
