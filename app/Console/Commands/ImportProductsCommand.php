@@ -52,7 +52,7 @@ class ImportProductsCommand extends Command
         if (!is_null($products)) {
             foreach ($products as $product) {
                 if ($this->verifyExists($product['title'])) {
-                    (new ConsoleOutput())->writeln('Item '.$product['title'].' não importado, já existe um item cadastrado na base com esse nome.');
+                    (new ConsoleOutput())->writeln('Item '.$product['title'].' não importado, já existe um registro cadastrado na base com esse nome.');
                 } else {
                     $params = [
                         'name' => $product['title'],

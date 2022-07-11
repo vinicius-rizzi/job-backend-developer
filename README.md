@@ -60,7 +60,7 @@ php artisan products:import --id=15
 ```
 
 Se o item ja existir na base é retornado a uma mensagem de aviso no terminal, conforme o exemplo abaixo:
-`Item Rain Jacket Women Windbreaker Striped Climbing Raincoats não importado, já existe um item cadastrado na base com esse nome`
+`Item Rain Jacket Women Windbreaker Striped Climbing Raincoats não importado, já existe um registro cadastrado na base com esse nome.`
 
 ##### Requisições API
 
