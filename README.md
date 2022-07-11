@@ -3,25 +3,19 @@
 # Teste prático para Back-End Developer
 ***
 
-Bem-vinda, pessoa desenvolvedora.
+- CRUD através de uma API REST com Laravel;
+- comando artisan que se comunicará com uma outra API para importar em um banco de dados;
 
-Este é o teste que nós, aqui da Yampi, usamos para avaliar tecnicamente todas as pessoas que estão participando do nosso processo seletivo para a vaga de desenvolvimento Back-End.
-
-## TL;DR
-
-- Você deverá criar um CRUD através de uma API REST com Laravel;
-- Você deverá criar um comando artisan que se comunicará com uma outra API para importar em seu banco de dados;
-
-## Começando
-
-**Faça um fork desse projeto para iniciar o desenvolvimento. PRs não serão aceitos.**
 
 ### Configuração do ambiente
 ***
 
 **Para configuração do ambiente é necessário ter o [Docker](https://docs.docker.com/desktop/) instalado em sua máquina.**
 
-Dentro da pasta do projeto, rode o seguinte comando: `docker-compose up -d`.
+Dentro da pasta do projeto, rode o seguinte comando: 
+```bash
+docker-compose up -d
+```
 
 Copie o arquivo `.env.example` a renomeie para `.env` dentro da pasta raíz da aplicação.
 
@@ -31,7 +25,11 @@ cp .env.example .env
 
 Após criar o arquivo `.env`, será necessário acessar o container da aplicação para rodar alguns comandos de configuração do Laravel.
 
-Para acessar o container use o comando `docker exec -it yampi_test_app sh`.
+Para acessar o container use o comando:
+
+```bash
+docker exec -it yampi_test_app sh
+```
 
 Digite os seguintes comandos dentro do container:
 
@@ -41,32 +39,51 @@ php artisan key:generate
 php artisan migrate
 ```
 
-Após rodar esses comandos, seu ambiente estará pronto para começar o teste.
+Após rodar esses comandos, seu ambiente estará pronto para começar.
 
 Para acessar a aplicação, basta acessar `localhost:8000`
 
-### Funcionalidades a serem implementadas
+### Instruções para teste
 
-**Essa aplicação deverá se comportar como uma API REST, onde será consumida por outros sistemas. Nesse teste você deverá se preocupar em constriuir somente a API**. 
+##### Importação do produtos por comando
 
-##### CRUD produtos
+É possivel utilizar o comando abaixo, que busca produtos API da `https://fakestoreapi.com` e armazena os resultados na base de dados.
 
-Aqui você deverá desenvolver as principais operações para o gerenciamento de um catálogo de produtos, sendo elas:
+```bash
+php artisan products:import
+```
 
-- Criação
-- Atualização
-- Exclusão
+Caso deseje importar um produto em específico é possível informar o id no comando (id de 1 a 20 conforme a API da FakeStore):
 
-O produto deve ter a seguinte estrutura:
+```bash
+php artisan products:import --id=15
+```
 
-Campo       | Tipo      | Obrigatório   | Pode se repetir
------------ | :------:  | :------:      | :------:
-id          | int       | true          | false
-name        | string    | true          | false        
-price       | float     | true          | true
-decription  | text      | true          | true
-category    | string    | true          | true
-image_url   | url       | false         | true
+Se o item ja existir na base é retornado a uma mensagem de aviso no terminal, conforme o exemplo abaixo:
+`Item Rain Jacket Women Windbreaker Striped Climbing Raincoats não importado, já existe um item cadastrado na base com esse nome`
+
+##### Requisições API
+
+Segue as requisições do projeto:
+
+Requisições | Tipo     | Rota                                    | 
+----------- | :------: | :------:                                | 
+index       | GET      | http://localhost:8000/api/products      |
+store       | POST     | http://localhost:8000/api/products      |     
+show        | GET      | http://localhost:8000/api/products/{id} |
+update      | PUT      | http://localhost:8000/api/products/{id} |
+delete      | DELETE   | http://localhost:8000/api/products/{id} |
+
+Possiveis itens do payload:
+
+Campo        | Tipo      | 
+-----------  | :------:  | 
+name         | string    |      
+price        | float     |
+description  | text      | 
+category     | string    |
+image        | url       | 
+
 
 Os endpoints de criação e atualização devem seguir o seguinte formato de payload:
 
@@ -80,30 +97,88 @@ Os endpoints de criação e atualização devem seguir o seguinte formato de pay
 }
 ```
 
-**Importante:** Tanto os endpoints de criação é atualização, deverão ter uma camada de validação dos campos.
+Possiveis filtros da requisição de listagem:
 
-##### Buscas de produtos
+Campo       | Tipo      | Filtro          | 
+----------- | :------:  | :------:        | 
+search      | string    | name e category |
+category    | string    | category        |     
+image       | boolean   | image           |
+per_page    | int       | num. de itens   |
 
-Para realizar a manutenção de um catálogo de produtos é necessário que o sistema tenha algumas buscas, sendo elas:
+Obs: Quando os filtros `search` e `category` são utilizados juntos a listagem traz as "categorias" informados em ambos.
 
-- Busca pelos campos `name` e `category` (trazer resultados que batem com ambos os campos).
-- Busca por uma categoria específica.
-- Busca de produtos com e sem imagem.
-- Buscar um produto pelo seu ID único.
+##### Exemplo de Requisições
 
-##### Importação de produtos de uma API externa
+- Listagem geral (index)
 
-É necessário que o sistema seja capaz de importar produtos que estão em um outro serviço. Deverá ser criado um comando que buscará produtos nessa API e armazenará os resultados para a sua base de dados. 
+```json
+curl --location --request GET 'http://localhost:8000/api/products' \
+--header 'Accept: application/json' \
+--header 'Content-Type: application/json' \
+--data-raw '
+```
 
-Sugestão: `php artisan products:import`
+- Listagem com filtros (index)
 
-Esse comando deverá ter uma opção de importar um único produto da API externa, que será encontrado através de um ID externo.
+```json
+curl --location --request GET 'http://localhost:8000/api/products' \
+--header 'Accept: application/json' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "search": "clothing",
+    "category": "electronics",
+    "image": true
+}'
+```
 
-Sugestão: `php artisan products:import --id=123`
+- Criação (store)
 
-Utilize a seguinte API para importar os produtos: [https://fakestoreapi.com/docs](https://fakestoreapi.com/docs)
+```json
+curl --location --request POST 'http://localhost:8000/api/products' \
+--header 'Accept: application/json' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "name": "Notebook",
+    "price": 5000.00,
+    "description": "auris condimentum feugiat lorem eu suscipit. Vivamus cursus eros quis urna placerat, in vestibulum urna congue.",
+    "category": "eletronics",
+    "image": "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"
+}'
+```
+
+- Busca pelo Id (show)
+
+```json
+curl --location --request GET 'http://localhost:8000/api/products/649' \
+--header 'Accept: application/json' \
+--header 'Content-Type: application/json'
+```
+
+- Atualização (update)
+
+```json
+curl --location --request PUT 'http://localhost:8000/api/products/26' \
+--header 'Accept: application/json' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "name": "New Notebook",
+    "price": 5250.00,
+    "description": "new description.",
+    "category": "new category",
+    "image": "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"
+}'
+```
+
+- Exclusão (delete)
+
+```json
+curl --location --request DELETE 'http://localhost:8000/api/products/615' \
+--header 'Accept: application/json' \
+--header 'Content-Type: application/json'
+```
 
 ---
 
-Se houver dúvidas, por favor, abra uma issue nesse repositório. Ficaremos felizes em ajudá-lo ou até mesmo melhorar essa documentação.
+Se houver dúvidas, por favor, contatatar via linkedin (https://www.linkedin.com/in/vinicius-rizzi/).
 
