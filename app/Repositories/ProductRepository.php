@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 class ProductRepository
 {
     /**
-     * Lista produtos.
+     * List products.
      *
      * @param ParameterBag $params
      * @return void
@@ -46,7 +46,7 @@ class ProductRepository
     }
 
     /**
-     * Cria um produto.
+     * Create a product.
      *
      * @param ParameterBag $params
      * @return Product
@@ -61,7 +61,7 @@ class ProductRepository
     }
 
     /**
-     * Altera um produto.
+     * Update a product.
      *
      * @param ParameterBag $params
      * @param Product $product
@@ -77,7 +77,7 @@ class ProductRepository
     }
 
     /**
-     * Mapeia o payload conforme os itens do Product.
+     * Map payload in accordance with model.
      *
      * @param ParameterBag $params
      * @param Product $product
@@ -95,7 +95,7 @@ class ProductRepository
     }
 
     /**
-     * Exclui uma conta.
+     * Delete a product.
      *
      * @param Product $product
      * @return void

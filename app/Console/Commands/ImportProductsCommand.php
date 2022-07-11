@@ -71,7 +71,7 @@ class ImportProductsCommand extends Command
     }
 
     /**
-     * Busca produtos na api fakestore.
+     * Search for products in the fakestore api.
      *
      * @param string $url
      * @return array
@@ -86,7 +86,7 @@ class ImportProductsCommand extends Command
     }
 
     /**
-     * Verifica se já existe um item cadastrado com o mesmo nome.
+     * Checks if there is already an item registered with the same name.
      *
      * @param string $name
      * @return boolean

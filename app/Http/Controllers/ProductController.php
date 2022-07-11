@@ -17,7 +17,7 @@ class ProductController extends Controller
     private $productRepository;
 
     /**
-     * Construtor.
+     * Construct.
      *
      * @param ProductRepository $productRepository
      */
@@ -26,7 +26,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Lista produtos.
+     * List products.
      *
      * @param Request $request
      * @return ResourceCollection
@@ -39,7 +39,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Cria um produto.
+     * Create a product.
      *
      * @param StoreProductRequest $request
      * @return ProductResource
@@ -52,7 +52,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Busca um produto.
+     * Find a product.
      *
      * @param Product $product
      * @return ProductResource
@@ -63,7 +63,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Altera um produto.
+     * Update a product.
      *
      * @param UpdateProductRequest $request
      * @param Product $product
@@ -77,7 +77,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Exclui um produto.
+     * Delete a product.
      *
      * @param Product $product
      * @return Response
