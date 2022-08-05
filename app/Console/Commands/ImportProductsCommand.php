@@ -35,32 +35,18 @@ class ImportProductsCommand extends Command
      */
     public function handle()
     {
-        $url = Config::get('fakestoreapi.url');
+        $url = $this->getUrl($this->option('id'));
 
-        if (!$this->option('id')) {
-            $products = $this->getProducts($url);
-        } else {
-            if ($this->option('id') <= 20) {
-                $url = $url . '/' . $this->option('id');
-
-                $products = [$this->getProducts($url)];
-            } else {
-                return (new ConsoleOutput())->writeln('Id inválido, informe um id de 1 a 20.');
-            }
-        }
+        $products = $this->getProducts($url);
 
         if (!is_null($products)) {
             foreach ($products as $product) {
                 if ($this->verifyExists($product['title'])) {
-                    (new ConsoleOutput())->writeln('Item '.$product['title'].' não importado, já existe um registro cadastrado na base com esse nome.');
+                    (new ConsoleOutput())->writeln(
+                        'Item '.$product['title'].' não importado, já existe um registro cadastrado na base com esse nome.'
+                    );
                 } else {
-                    $params = [
-                        'name' => $product['title'],
-                        'price' => $product['price'],
-                        'description' => $product['description'],
-                        'category' => $product['category'],
-                        'image' => $product['image']
-                    ];
+                    $params = $this->prepareForSave($product);
 
                     (new ProductRepository())->save(new ParameterBag($params));
                 }
@@ -68,6 +54,27 @@ class ImportProductsCommand extends Command
         }
 
         return (new ConsoleOutput())->writeln('Importação finalizada.');
+    }
+
+    /**
+     * Create a url according to command.
+     *
+     * @param integer|null $id
+     * @return string
+     */
+    private function getUrl(int $id = null): string
+    {
+        $url = Config::get('fakestoreapi.url');
+
+        if (is_null($id)) {
+            return $url;
+        }
+
+        if ($this->option('id') > 20) {
+            return (new ConsoleOutput())->writeln('Id inválido, informe um id de 1 a 20.');
+        }
+
+        return $url.'/'.$this->option('id');
     }
 
     /**
@@ -79,7 +86,13 @@ class ImportProductsCommand extends Command
     private function getProducts(string $url): array
     {
         try {
-            return Http::get($url)->json();
+            $products = Http::get($url)->json();
+
+            if (array_key_exists(0, $products)) {
+                return $products;
+            }
+
+            return [$products];
         } catch (Throwable $th) {
             Log::error($th);
         }
@@ -100,5 +113,22 @@ class ImportProductsCommand extends Command
         }
 
         return false;
+    }
+
+    /**
+     * Adjust items for save.
+     *
+     * @param array $product
+     * @return array
+     */
+    public function prepareForSave(array $product): array
+    {
+        return [
+            'name' => $product['title'],
+            'price' => $product['price'],
+            'description' => $product['description'],
+            'category' => $product['category'],
+            'image' => $product['image']
+        ];
     }
 }
