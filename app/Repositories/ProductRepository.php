@@ -23,10 +23,10 @@ class ProductRepository
         }
 
         if ($params->get('category')) {
-            if (!is_null($params->get('search'))) {
-                $products->orWhere('category', $params->get('category'));
-            } else {
+            if (is_null($params->get('search'))) {
                 $products->where('category', $params->get('category'));
+            } else {
+                $products->orWhere('category', $params->get('category'));
             }
         }
 
