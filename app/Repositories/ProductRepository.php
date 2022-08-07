@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Product;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 class ProductRepository
@@ -11,9 +12,9 @@ class ProductRepository
      * List products.
      *
      * @param ParameterBag $params
-     * @return void
+     * @return LengthAwarePaginator
      */
-    public function index(ParameterBag $params)
+    public function index(ParameterBag $params): LengthAwarePaginator
     {
         $products = Product::query();
 
