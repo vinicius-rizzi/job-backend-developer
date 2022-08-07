@@ -35,21 +35,23 @@ class ImportProductsCommand extends Command
      */
     public function handle()
     {
+        if ($this->option('id') > 20) {
+            return (new ConsoleOutput())->writeln('Id inválido, informe um id de 1 a 20.');
+        }
+
         $url = $this->getUrl($this->option('id'));
 
         $products = $this->getProducts($url);
 
-        if (!is_null($products)) {
-            foreach ($products as $product) {
-                if ($this->verifyExists($product['title'])) {
-                    (new ConsoleOutput())->writeln(
-                        'Item '.$product['title'].' não importado, já existe um registro cadastrado na base com esse nome.'
-                    );
-                } else {
-                    $params = $this->prepareForSave($product);
+        foreach ($products as $product) {
+            if ($this->checkIfExists($product['title'])) {
+                (new ConsoleOutput())->writeln(
+                    'Item '.$product['title'].' não importado, já existe um registro cadastrado na base com esse nome.'
+                );
+            } else {
+                $params = $this->prepareForSave($product);
 
-                    (new ProductRepository())->save(new ParameterBag($params));
-                }
+                (new ProductRepository())->save(new ParameterBag($params));
             }
         }
 
@@ -68,10 +70,6 @@ class ImportProductsCommand extends Command
 
         if (is_null($id)) {
             return $url;
-        }
-
-        if ($this->option('id') > 20) {
-            return (new ConsoleOutput())->writeln('Id inválido, informe um id de 1 a 20.');
         }
 
         return $url.'/'.$this->option('id');
@@ -104,15 +102,15 @@ class ImportProductsCommand extends Command
      * @param string $name
      * @return boolean
      */
-    private function verifyExists(string $name): bool
+    private function checkIfExists(string $name): bool
     {
         $product = Product::where('name', $name)->first();
 
-        if (!is_null($product)) {
-            return true;
+        if (is_null($product)) {
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     /**
